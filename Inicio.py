@@ -11,10 +11,10 @@ st.set_page_config(
 )
 
 st.markdown("""
-    <style>
-    .main { padding: 2rem; }
-    .stAlert { margin-top: 1rem; }
-    </style>
+<style>
+.main { padding: 2rem; }
+.stAlert { margin-top: 1rem; }
+</style>
 """, unsafe_allow_html=True)
 
 # Nombres que se reconocen como columna de tiempo (sin importar mayúsculas)
