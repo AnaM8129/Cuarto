@@ -220,7 +220,7 @@ try:
             )
 
     # ----------------------------------------------------
-    #  TAB 4 · Confort Térmico (Corregido)
+    #  TAB 4 · Confort Térmico (Definitivo)
     # ----------------------------------------------------
     with tab4:
         st.subheader("🌡️ Análisis de Confort Térmico Ambiental")
@@ -228,13 +228,22 @@ try:
 
         df_confort = df1.copy()
         
-        # Buscamos de forma flexible las columnas de temperatura y humedad
-        col_temp = next((c for c in df_confort.columns if "temp" in c.lower() and "time" not in c.lower()), None)
-        col_hum = next((c for c in df_confort.columns if "hum" in c.lower() and "time" not in c.lower()), None)
+        # Identificamos las columnas numéricas disponibles en el dataframe combinado
+        cols_num = df_confort.select_dtypes(include="number").columns.tolist()
+        
+        # Buscamos la columna de temperatura y de humedad de forma exacta entre las numéricas
+        col_temp = next((c for c in cols_num if "temp" in c.lower()), None)
+        col_hum = next((c for c in cols_num if "hum" in c.lower()), None)
+
+        # Si por algo no las encuentra por el nombre, tomamos las primeras dos numéricas disponibles
+        if not col_temp and len(cols_num) > 0:
+            col_temp = cols_num[0]
+        if not col_hum and len(cols_num) > 1:
+            col_hum = cols_num[1]
 
         def evaluar_confort(row):
             if not col_temp or not col_hum:
-                return "Datos incompletos"
+                return "Sin datos"
             
             temp = pd.to_numeric(row[col_temp], errors="coerce")
             hum = pd.to_numeric(row[col_hum], errors="coerce")
@@ -261,8 +270,7 @@ try:
             st.write("**Últimos registros evaluados:**")
             cols_a_mostrar = [c for c in [col_temp, col_hum] if c is not None]
             st.dataframe(df_confort[cols_a_mostrar + ["Estado_Confort"]].tail(5))
-            
-    # ----------------------------------------------------
+            # ----------------------------------------------------
     #  TAB 5 · Información del sitio
     # ----------------------------------------------------
     with tab5:
