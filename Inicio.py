@@ -220,24 +220,27 @@ try:
             )
 
     # ----------------------------------------------------
-    #  TAB 4 · Confort Térmico (NUEVO)
+    #  TAB 4 · Confort Térmico (Corregido)
     # ----------------------------------------------------
     with tab4:
         st.subheader("🌡️ Análisis de Confort Térmico Ambiental")
         st.markdown("Evaluación automática del nivel de confort basada en las lecturas cruzadas de temperatura y humedad.")
 
         df_confort = df1.copy()
-        cols_disponibles = df_confort.columns.tolist()
+        
+        # Buscamos de forma flexible las columnas de temperatura y humedad
+        col_temp = next((c for c in df_confort.columns if "temp" in c.lower() and "time" not in c.lower()), None)
+        col_hum = next((c for c in df_confort.columns if "hum" in c.lower() and "time" not in c.lower()), None)
 
         def evaluar_confort(row):
-            temp, hum = None, None
-            for c in cols_disponibles:
-                if "temp" in c.lower():
-                    temp = row[c]
-                if "hum" in c.lower():
-                    hum = row[c]
-            if temp is None or hum is None:
-                return "No disponible"
+            if not col_temp or not col_hum:
+                return "Datos incompletos"
+            
+            temp = pd.to_numeric(row[col_temp], errors="coerce")
+            hum = pd.to_numeric(row[col_hum], errors="coerce")
+            
+            if pd.isna(temp) or pd.isna(hum):
+                return "Sin datos"
             
             if 20 <= temp <= 26 and 30 <= hum <= 60:
                 return "Confortable 🟢"
@@ -256,9 +259,9 @@ try:
 
         with cc2:
             st.write("**Últimos registros evaluados:**")
-            cols_a_mostrar = [c for c in cols_disponibles if "temp" in c.lower() or "hum" in c.lower()]
+            cols_a_mostrar = [c for c in [col_temp, col_hum] if c is not None]
             st.dataframe(df_confort[cols_a_mostrar + ["Estado_Confort"]].tail(5))
-
+            
     # ----------------------------------------------------
     #  TAB 5 · Información del sitio
     # ----------------------------------------------------
