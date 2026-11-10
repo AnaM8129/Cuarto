@@ -220,57 +220,52 @@ try:
             )
 
     # ----------------------------------------------------
-    #  TAB 4 · Confort Térmico (Definitivo)
+    #  TAB 4 · Confort Térmico (Lectura Directa)
     # ----------------------------------------------------
     with tab4:
         st.subheader("🌡️ Análisis de Confort Térmico Ambiental")
-        st.markdown("Evaluación automática del nivel de confort basada en las lecturas cruzadas de temperatura y humedad.")
+        st.markdown("Evaluación automática del nivel de confort basada en las lecturas de temperatura y humedad.")
 
-        df_confort = df1.copy()
-        
-        # Identificamos las columnas numéricas disponibles en el dataframe combinado
-        cols_num = df_confort.select_dtypes(include="number").columns.tolist()
-        
-        # Buscamos la columna de temperatura y de humedad de forma exacta entre las numéricas
-        col_temp = next((c for c in cols_num if "temp" in c.lower()), None)
-        col_hum = next((c for c in cols_num if "hum" in c.lower()), None)
+        # Leemos los dataframes limpios de forma independiente para asegurar los datos
+        df_t_local, _, _ = preparar_datos(df_temp_raw)
+        df_h_local, _, _ = preparar_datos(df_hum_raw)
 
-        # Si por algo no las encuentra por el nombre, tomamos las primeras dos numéricas disponibles
-        if not col_temp and len(cols_num) > 0:
-            col_temp = cols_num[0]
-        if not col_hum and len(cols_num) > 1:
-            col_hum = cols_num[1]
+        # Buscamos las columnas numéricas en cada archivo
+        c_t = next((c for c in df_t_local.select_dtypes(include="number").columns if "temp" in c.lower()), None)
+        c_h = next((c for c in df_h_local.select_dtypes(include="number").columns if "hum" in c.lower()), None)
 
-        def evaluar_confort(row):
-            if not col_temp or not col_hum:
-                return "Sin datos"
-            
-            temp = pd.to_numeric(row[col_temp], errors="coerce")
-            hum = pd.to_numeric(row[col_hum], errors="coerce")
-            
-            if pd.isna(temp) or pd.isna(hum):
-                return "Sin datos"
-            
-            if 20 <= temp <= 26 and 30 <= hum <= 60:
-                return "Confortable 🟢"
-            elif temp > 26:
-                return "Caluroso / Seco 🔴" if hum < 40 else "Caluroso / Húmedo 🟠"
-            else:
-                return "Frío / Fresco 🔵"
+        if c_t and c_h and not df_t_local.empty and not df_h_local.empty:
+            # Unimos los dos dataframes de forma segura por índice o simplemente tomamos sus valores
+            df_conf_directo = pd.DataFrame({
+                "Temperatura": df_t_local[c_t],
+                "Humedad": df_h_local[c_h]
+            }).dropna()
 
-        df_confort["Estado_Confort"] = df_confort.apply(evaluar_confort, axis=1)
-        conteo_confort = df_confort["Estado_Confort"].value_counts()
+            def evaluar_confort_dir(row):
+                temp = row["Temperatura"]
+                hum = row["Humedad"]
+                if 20 <= temp <= 26 and 30 <= hum <= 60:
+                    return "Confortable 🟢"
+                elif temp > 26:
+                    return "Caluroso / Seco 🔴" if hum < 40 else "Caluroso / Húmedo 🟠"
+                else:
+                    return "Frío / Fresco 🔵"
 
-        cc1, cc2 = st.columns([1, 2])
-        with cc1:
-            st.write("**Distribución de Estados:**")
-            st.dataframe(conteo_confort)
+            df_conf_directo["Estado_Confort"] = df_conf_directo.apply(evaluar_confort_dir, axis=1)
+            conteo_confort = df_conf_directo["Estado_Confort"].value_counts()
 
-        with cc2:
-            st.write("**Últimos registros evaluados:**")
-            cols_a_mostrar = [c for c in [col_temp, col_hum] if c is not None]
-            st.dataframe(df_confort[cols_a_mostrar + ["Estado_Confort"]].tail(5))
-            # ----------------------------------------------------
+            cc1, cc2 = st.columns([1, 2])
+            with cc1:
+                st.write("**Distribución de Estados:**")
+                st.dataframe(conteo_confort)
+
+            with cc2:
+                st.write("**Últimos registros evaluados:**")
+                st.dataframe(df_conf_directo.tail(5))
+        else:
+            st.warning("No se pudieron enlazar automáticamente las columnas de temperatura y humedad para el cálculo.")
+
+    # ----------------------------------------------------
     #  TAB 5 · Información del sitio
     # ----------------------------------------------------
     with tab5:
