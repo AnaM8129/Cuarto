@@ -112,8 +112,8 @@ try:
         + ", ".join(f"`{v}`" for v in variables)
     )
 
-    tab1, tab2, tab3, tab4 = st.tabs(
-        ["📈 Visualización", "📊 Estadísticas", "🔍 Filtros", "🗺️ Información del Sitio"]
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(
+        ["📈 Visualización", "📊 Estadísticas", "🔍 Filtros", "🌡️ Confort Térmico", "🗺️ Información del Sitio"]
     )
 
     # ----------------------------------------------------
@@ -220,9 +220,49 @@ try:
             )
 
     # ----------------------------------------------------
-    #  TAB 4 · Información del sitio
+    #  TAB 4 · Confort Térmico (NUEVO)
     # ----------------------------------------------------
     with tab4:
+        st.subheader("🌡️ Análisis de Confort Térmico Ambiental")
+        st.markdown("Evaluación automática del nivel de confort basada en las lecturas cruzadas de temperatura y humedad.")
+
+        df_confort = df1.copy()
+        cols_disponibles = df_confort.columns.tolist()
+
+        def evaluar_confort(row):
+            temp, hum = None, None
+            for c in cols_disponibles:
+                if "temp" in c.lower():
+                    temp = row[c]
+                if "hum" in c.lower():
+                    hum = row[c]
+            if temp is None or hum is None:
+                return "No disponible"
+            
+            if 20 <= temp <= 26 and 30 <= hum <= 60:
+                return "Confortable 🟢"
+            elif temp > 26:
+                return "Caluroso / Seco 🔴" if hum < 40 else "Caluroso / Húmedo 🟠"
+            else:
+                return "Frío / Fresco 🔵"
+
+        df_confort["Estado_Confort"] = df_confort.apply(evaluar_confort, axis=1)
+        conteo_confort = df_confort["Estado_Confort"].value_counts()
+
+        cc1, cc2 = st.columns([1, 2])
+        with cc1:
+            st.write("**Distribución de Estados:**")
+            st.dataframe(conteo_confort)
+
+        with cc2:
+            st.write("**Últimos registros evaluados:**")
+            cols_a_mostrar = [c for c in cols_disponibles if "temp" in c.lower() or "hum" in c.lower()]
+            st.dataframe(df_confort[cols_a_mostrar + ["Estado_Confort"]].tail(5))
+
+    # ----------------------------------------------------
+    #  TAB 5 · Información del sitio
+    # ----------------------------------------------------
+    with tab5:
         st.subheader("Información del Sitio de Medición")
 
         col1, col2 = st.columns(2)
