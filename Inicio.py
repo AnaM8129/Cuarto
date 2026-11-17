@@ -5,65 +5,75 @@ import streamlit as st
 #  Configuración de la página
 # ============================================================
 st.set_page_config(
-    page_title="Análisis de Sensores - EAFIT",
+    page_title="Panel IoT - EAFIT",
     page_icon="📊",
     layout="wide"
 )
 
 # ============================================================
-#  Estilos CSS personalizados (Diseño Moderno de Tarjetas y Dashboard)
+#  Estilos CSS Avanzados para cambiar por completo la interfaz
 # ============================================================
 st.markdown("""
 <style>
-    /* Estilo general del fondo y contenedores */
-    .main {
-        background-color: #F8F9FA;
-        padding: 1.5rem;
-    }
-    
-    /* Contenedores tipo tarjeta */
-    div.stMarkdown, div.element-container {
-        color: #2C3E50;
-    }
-    
-    /* Tarjetas personalizadas para métricas o secciones */
-    .dashboard-card {
-        background-color: #FFFFFF;
-        padding: 20px;
-        border-radius: 16px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        margin-bottom: 20px;
-        border: 1px solid #E9ECEF;
+    /* Fondo general de la aplicación más limpio y moderno */
+    .stApp {
+        background-color: #F4F7F6;
     }
 
-    /* Estilización de pestañas (Tabs) */
+    /* Encabezado Principal Estilizado */
+    .main-header {
+        background: linear-gradient(135deg, #1A365D 0%, #2B6CB0 100%);
+        padding: 2.5rem;
+        border-radius: 16px;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+    .main-header h1 {
+        color: white !important;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+    .main-header p {
+        color: #E2E8F0 !important;
+        font-size: 1.1rem;
+    }
+
+    /* Contenedores y tarjetas internas */
+    div.block-container {
+        padding-top: 2rem;
+    }
+
+    /* Estilización avanzada de las pestañas (Tabs) */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
+        gap: 12px;
         background-color: #FFFFFF;
-        padding: 10px;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        padding: 12px;
+        border-radius: 14px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        border: 1px solid #E2E8F0;
     }
     .stTabs [data-baseweb="tab"] {
-        height: 40px;
-        white-space: pre-wrap;
-        background-color: #F1F3F5;
-        border-radius: 8px;
-        color: #495057;
-        font-weight: 600;
-        padding: 0 16px;
+        height: 45px;
+        background-color: #EDF2F7;
+        border-radius: 10px;
+        color: #4A5568;
+        font-weight: 700;
+        padding: 0 20px;
         border: none;
+        transition: all 0.3s ease;
     }
     .stTabs [aria-selected="true"] {
-        background-color: #3182CE !important;
+        background-color: #2B6CB0 !important;
         color: white !important;
+        box-shadow: 0 4px 12px rgba(43, 108, 176, 0.3);
     }
 
-    /* Botones y descargas */
-    .stButton>button, .stDownloadButton>button {
-        border-radius: 10px;
-        font-weight: 600;
-        border: none;
+    /* Tarjetas de métricas y contenedores de datos */
+    [data-testid="stMetricValue"] {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2B6CB0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -76,14 +86,7 @@ CANDIDATAS_TIEMPO = ["time", "_time", "timestamp", "fecha", "date", "datetime", 
 #  Preparación de datos
 # ============================================================
 def preparar_datos(df):
-    """Detecta la columna de tiempo y las columnas numéricas del CSV.
-
-    Devuelve el DataFrame procesado, la lista de variables numéricas
-    y el nombre original de la columna de tiempo (o None).
-    """
     df = df.copy()
-
-    # 1. Columna de tiempo → índice
     col_tiempo = next(
         (c for c in df.columns if str(c).strip().lower() in [cand.lower() for cand in CANDIDATAS_TIEMPO]),
         None
@@ -93,7 +96,6 @@ def preparar_datos(df):
         df = df.dropna(subset=[col_tiempo]).set_index(col_tiempo).sort_index()
         df.index.name = "Time"
 
-    # 2. Columnas de texto que en realidad son números (p. ej. "23,5")
     for c in df.columns:
         if not pd.api.types.is_numeric_dtype(df[c]):
             convertida = pd.to_numeric(
@@ -103,24 +105,22 @@ def preparar_datos(df):
             if convertida.notna().mean() >= 0.9:
                 df[c] = convertida
 
-    # 3. Variables numéricas disponibles para el análisis
     numericas = df.select_dtypes(include="number").columns.tolist()
     return df, numericas, col_tiempo
 
 
 def normalizar(df):
-    """Escala cada columna a 0–1 para comparar variables con unidades distintas."""
     rango = (df.max() - df.min()).replace(0, 1)
     return (df - df.min()) / rango
 
 
 # ============================================================
-#  Encabezado Principal Estilizado
+#  Encabezado Visual Moderno (Banner)
 # ============================================================
 st.markdown("""
-    <div style="padding: 1.5rem 0; border-bottom: 2px solid #E9ECEF; margin-bottom: 2rem;">
-        <h1 style="color: #1A365D; font-weight: 800; margin-bottom: 0.2rem;">📊 Panel de Control IoT - Sensores Urbanos</h1>
-        <p style="color: #718096; font-size: 1.1rem;">Sistema avanzado de monitoreo ambiental, análisis de confort y telemetría en tiempo real.</p>
+    <div class="main-header">
+        <h1>📊 Panel de Control IoT - Sensores Urbanos</h1>
+        <p>Sistema avanzado de monitoreo ambiental en tiempo real • Universidad EAFIT</p>
     </div>
 """, unsafe_allow_html=True)
 
@@ -128,14 +128,12 @@ st.markdown("""
 #  Carga automática de hum.csv y temp.csv
 # ============================================================
 try:
-    # Lectura de los archivos locales ubicados en la raíz del proyecto
     df_hum_raw = pd.read_csv("hum.csv")
     df_temp_raw = pd.read_csv("temp.csv")
 
     df_hum, vars_hum, col_t_hum = preparar_datos(df_hum_raw)
     df_temp, vars_temp, col_t_temp = preparar_datos(df_temp_raw)
 
-    # Combinar ambos dataframes por marca de tiempo (índice) si es posible
     if not df_hum.empty and not df_temp.empty and isinstance(df_hum.index, pd.DatetimeIndex) and isinstance(df_temp.index, pd.DatetimeIndex):
         df1 = pd.merge(df_temp, df_hum, left_index=True, right_index=True, how="outer").sort_index()
     elif not df_temp.empty:
@@ -151,11 +149,11 @@ try:
         st.stop()
 
     st.success(
-        f"✅ Se han cargado correctamente los archivos **hum.csv** y **temp.csv**. Variables detectadas: "
+        f"✅ Archivos de telemetría cargados exitosamente. Variables detectadas: "
         + ", ".join(f"`{v}`" for v in variables)
     )
 
-    # Pestañas principales
+    # Pestañas principales con nuevo diseño
     tab1, tab2, tab3, tab4, tab5 = st.tabs(
         ["📈 Visualización", "📊 Estadísticas", "🔍 Filtros", "🌡️ Confort Térmico", "🗺️ Información del Sitio"]
     )
@@ -166,38 +164,37 @@ try:
     with tab1:
         st.markdown("### 📈 Visualización Gráfica de Sensores")
         
-        with st.container():
-            col_a, col_b = st.columns([3, 1])
-            with col_a:
-                vars_graf = st.multiselect(
-                    "Variables a graficar",
-                    variables,
-                    default=variables if len(variables) <= 4 else variables[:2]
-                )
-            with col_b:
-                chart_type = st.selectbox("Tipo de gráfico", ["Línea", "Área", "Barra"])
-
-            normalizado = st.checkbox(
-                "Normalizar escalas (0–1)",
-                help="Útil para comparar variables con unidades distintas, por ejemplo temperatura (°C) y humedad (%)."
+        col_a, col_b = st.columns([3, 1])
+        with col_a:
+            vars_graf = st.multiselect(
+                "Variables a graficar",
+                variables,
+                default=variables if len(variables) <= 4 else variables[:2]
             )
+        with col_b:
+            chart_type = st.selectbox("Tipo de gráfico", ["Línea", "Área", "Barra"])
 
-            if not vars_graf:
-                st.warning("Seleccione al menos una variable.")
+        normalizado = st.checkbox(
+            "Normalizar escalas (0–1)",
+            help="Útil para comparar variables con unidades distintas, por ejemplo temperatura (°C) y humedad (%)."
+        )
+
+        if not vars_graf:
+            st.warning("Seleccione al menos una variable.")
+        else:
+            datos_graf = df1[vars_graf]
+            if normalizado:
+                datos_graf = normalizar(datos_graf)
+
+            if chart_type == "Línea":
+                st.line_chart(datos_graf)
+            elif chart_type == "Área":
+                st.area_chart(datos_graf)
             else:
-                datos_graf = df1[vars_graf]
-                if normalizado:
-                    datos_graf = normalizar(datos_graf)
+                st.bar_chart(datos_graf)
 
-                if chart_type == "Línea":
-                    st.line_chart(datos_graf)
-                elif chart_type == "Área":
-                    st.area_chart(datos_graf)
-                else:
-                    st.bar_chart(datos_graf)
-
-            if st.checkbox("Mostrar datos crudos"):
-                st.dataframe(df1, use_container_width=True)
+        if st.checkbox("Mostrar datos crudos"):
+            st.dataframe(df1, use_container_width=True)
 
     # ----------------------------------------------------
     #  TAB 2 · Estadísticas
@@ -264,7 +261,6 @@ try:
         st.markdown("### 🌡️ Análisis de Confort Térmico Ambiental")
         st.markdown("Evaluación automática del nivel de confort basada en las lecturas directas de temperatura y humedad.")
 
-        # Leemos los dataframes limpios de forma independiente para asegurar los datos
         df_t_local, _, _ = preparar_datos(df_temp_raw)
         df_h_local, _, _ = preparar_datos(df_hum_raw)
 
@@ -342,7 +338,7 @@ except Exception as e:
 #  Pie de página profesional
 # ============================================================
 st.markdown("""
-    <div style="text-align: center; padding: 2rem 0; color: #A0AEC0; font-size: 0.9rem; border-top: 1px solid #E9ECEF; margin-top: 3rem;">
+    <div style="text-align: center; padding: 2rem 0; color: #718096; font-size: 0.9rem; border-top: 1px solid #E2E8F0; margin-top: 3rem;">
         Desarrollado con Streamlit • Sistema IoT de Sensores Urbanos<br>
         Universidad EAFIT • Medellín, Colombia
     </div>
