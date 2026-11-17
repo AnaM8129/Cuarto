@@ -5,33 +5,34 @@ import streamlit as st
 #  Configuración de la página
 # ============================================================
 st.set_page_config(
-    page_title="Panel IoT - EAFIT",
-    page_icon="📊",
+    page_title="AgroSmart IoT - EAFIT",
+    page_icon="🌱",
     layout="wide"
 )
 
 # ============================================================
-#  Estilos CSS · Dashboard Ejecutivo
-#  Paleta: azul marino #0F2A4A · azul corporativo #1D4ED8 · azul claro #DBEAFE
-#          grises #F1F5F9 / #E2E8F0 / #64748B · texto #0F172A
+#  Estilos CSS · Dashboard Ejecutivo AgroSmart
+#  Paleta: azul corporativo #0B2E4F · verde agro #15803D · verde hoja #DCFCE7
+#          grises #F1F5F2 / #E2E8E4 / #5B6B63 · texto #0F172A
 # ============================================================
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
     :root {
-        --navy: #0F2A4A;
-        --blue: #1D4ED8;
-        --blue-soft: #DBEAFE;
-        --blue-mist: #EFF6FF;
-        --bg: #F1F5F9;
+        --navy: #0B2E4F;
+        --green: #15803D;
+        --green-dark: #0F5B2E;
+        --green-soft: #DCFCE7;
+        --green-mist: #F0FDF4;
+        --bg: #F1F5F2;
         --card: #FFFFFF;
-        --line: #E2E8F0;
+        --line: #E2E8E4;
         --text: #0F172A;
-        --muted: #64748B;
+        --muted: #5B6B63;
         --radius: 16px;
-        --shadow-sm: 0 1px 2px rgba(15, 42, 74, 0.04), 0 4px 12px rgba(15, 42, 74, 0.05);
-        --shadow-md: 0 2px 4px rgba(15, 42, 74, 0.05), 0 12px 28px rgba(15, 42, 74, 0.08);
+        --shadow-sm: 0 1px 2px rgba(11, 46, 79, 0.04), 0 4px 12px rgba(11, 46, 79, 0.05);
+        --shadow-md: 0 2px 4px rgba(11, 46, 79, 0.05), 0 12px 28px rgba(11, 46, 79, 0.09);
     }
 
     /* ---------- Base ---------- */
@@ -55,7 +56,7 @@ st.markdown("""
     .main-header {
         position: relative;
         overflow: hidden;
-        background: linear-gradient(120deg, #0F2A4A 0%, #1E3A8A 55%, #1D4ED8 100%);
+        background: linear-gradient(120deg, #0B2E4F 0%, #0F5B54 55%, #15803D 100%);
         padding: 2.4rem 2.6rem;
         border-radius: 20px;
         color: white;
@@ -68,7 +69,7 @@ st.markdown("""
         right: -60px; top: -80px;
         width: 320px; height: 320px;
         border-radius: 50%;
-        background: radial-gradient(circle, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 70%);
+        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
     }
     .main-header h1 {
         color: #FFFFFF !important;
@@ -79,18 +80,19 @@ st.markdown("""
         padding: 0;
     }
     .main-header p {
-        color: #BFD3F5 !important;
+        color: #CDE7D6 !important;
         font-size: 1.02rem;
         font-weight: 500;
         margin: 0;
+        max-width: 760px;
     }
     .main-header .badge {
         display: inline-block;
-        margin-top: 1.1rem;
+        margin: 1.1rem 0.5rem 0 0;
         padding: 0.3rem 0.85rem;
         border-radius: 999px;
         background: rgba(255,255,255,0.14);
-        border: 1px solid rgba(255,255,255,0.22);
+        border: 1px solid rgba(255,255,255,0.24);
         color: #FFFFFF;
         font-size: 0.8rem;
         font-weight: 600;
@@ -108,6 +110,36 @@ st.markdown("""
         color: var(--navy) !important;
         font-size: 1.05rem !important;
         margin-top: 1.2rem !important;
+    }
+
+    /* ---------- Nota contextual de cada sección ---------- */
+    .section-note {
+        background: var(--green-mist);
+        border: 1px solid #BBF7D0;
+        border-left: 4px solid var(--green);
+        border-radius: 12px;
+        padding: 0.85rem 1.1rem;
+        color: #14532D;
+        font-size: 0.93rem;
+        font-weight: 500;
+        line-height: 1.55;
+        margin-bottom: 1.2rem;
+    }
+    .range-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin: 0.2rem 0 1.2rem 0;
+    }
+    .range-chips span {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0.35rem 0.9rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--navy);
+        box-shadow: var(--shadow-sm);
     }
 
     /* ---------- Pestañas ---------- */
@@ -132,13 +164,13 @@ st.markdown("""
         transition: background 0.2s ease, color 0.2s ease;
     }
     .stTabs [data-baseweb="tab"]:hover {
-        background: var(--blue-mist);
-        color: var(--blue);
+        background: var(--green-mist);
+        color: var(--green);
     }
     .stTabs [aria-selected="true"] {
-        background: var(--blue) !important;
+        background: var(--green) !important;
         color: #FFFFFF !important;
-        box-shadow: 0 6px 14px rgba(29, 78, 216, 0.28);
+        box-shadow: 0 6px 14px rgba(21, 128, 61, 0.28);
     }
     .stTabs [data-baseweb="tab-highlight"],
     .stTabs [data-baseweb="tab-border"] {
@@ -152,7 +184,7 @@ st.markdown("""
     [data-testid="stMetric"] {
         background: var(--card);
         border: 1px solid var(--line);
-        border-left: 4px solid var(--blue);
+        border-left: 4px solid var(--green);
         border-radius: var(--radius);
         padding: 1.1rem 1.3rem;
         box-shadow: var(--shadow-sm);
@@ -209,21 +241,21 @@ st.markdown("""
         min-height: 44px;
     }
     div[data-baseweb="select"] > div:focus-within {
-        border-color: var(--blue);
-        box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
+        border-color: var(--green);
+        box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.16);
     }
     span[data-baseweb="tag"] {
-        background: var(--blue-soft) !important;
-        color: var(--navy) !important;
+        background: var(--green-soft) !important;
+        color: #14532D !important;
         border-radius: 8px;
         font-weight: 600;
     }
     span[data-baseweb="tag"] span[role="presentation"] svg {
-        fill: var(--navy);
+        fill: #14532D;
     }
     [data-testid="stSlider"] [role="slider"] {
-        background: var(--blue);
-        box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.18);
+        background: var(--green);
+        box-shadow: 0 0 0 4px rgba(21, 128, 61, 0.2);
     }
     [data-testid="stCheckbox"] label p {
         font-weight: 500;
@@ -232,13 +264,13 @@ st.markdown("""
 
     /* ---------- Botones ---------- */
     .stDownloadButton button, .stButton button {
-        background: var(--blue);
+        background: var(--green);
         color: #FFFFFF;
         border: none;
         border-radius: 12px;
         padding: 0.6rem 1.3rem;
         font-weight: 700;
-        box-shadow: 0 6px 14px rgba(29, 78, 216, 0.25);
+        box-shadow: 0 6px 14px rgba(21, 128, 61, 0.26);
         transition: background 0.2s ease, transform 0.15s ease;
     }
     .stDownloadButton button:hover, .stButton button:hover {
@@ -247,7 +279,7 @@ st.markdown("""
         transform: translateY(-1px);
     }
     .stDownloadButton button:focus-visible, .stButton button:focus-visible {
-        outline: 3px solid rgba(29, 78, 216, 0.35);
+        outline: 3px solid rgba(21, 128, 61, 0.4);
         outline-offset: 2px;
     }
 
@@ -266,8 +298,8 @@ st.markdown("""
         line-height: 1.9;
     }
     code {
-        background: var(--blue-mist);
-        color: var(--blue);
+        background: var(--green-mist);
+        color: var(--green-dark);
         border-radius: 6px;
         padding: 0.1rem 0.4rem;
         font-weight: 600;
@@ -336,9 +368,13 @@ def normalizar(df):
 # ============================================================
 st.markdown("""
     <div class="main-header">
-        <h1>📊 Panel de Control IoT - Sensores Urbanos</h1>
-        <p>Sistema avanzado de monitoreo ambiental en tiempo real • Universidad EAFIT</p>
-        <span class="badge">Medellín, Colombia · ESP32 + DHT22</span>
+        <h1>🌱 AgroSmart IoT: Monitoreo y Automatización Climática</h1>
+        <p>Invernadero y cultivos protegidos: seguimiento continuo de temperatura y humedad
+        para anticipar el estrés de las plantas y apoyar la ventilación automatizada •
+        Universidad EAFIT</p>
+        <span class="badge">🌡️ Temperatura y humedad relativa</span>
+        <span class="badge">🌬️ Ventilación y compuertas automatizadas</span>
+        <span class="badge">📡 ESP32 + DHT22</span>
     </div>
 """, unsafe_allow_html=True)
 
@@ -367,20 +403,25 @@ try:
         st.stop()
 
     st.success(
-        f"✅ Archivos de telemetría cargados exitosamente. Variables detectadas: "
+        f"✅ Telemetría del invernadero cargada correctamente. Variables climáticas detectadas: "
         + ", ".join(f"`{v}`" for v in variables)
     )
 
     # Pestañas principales con nuevo diseño
     tab1, tab2, tab3, tab4, tab5 = st.tabs(
-        ["📈 Visualización", "📊 Estadísticas", "🔍 Filtros", "🌡️ Confort Térmico", "🗺️ Información del Sitio"]
+        ["📈 Monitoreo Climático", "📊 Estadísticas del Cultivo", "🔍 Filtros", "🌱 Viabilidad Climática", "🏡 Información del Invernadero"]
     )
 
     # ----------------------------------------------------
-    #  TAB 1 · Visualización
+    #  TAB 1 · Monitoreo Climático
     # ----------------------------------------------------
     with tab1:
-        st.markdown("### 📈 Visualización Gráfica de Sensores")
+        st.markdown("### 📈 Monitoreo Climático del Invernadero")
+        st.markdown(
+            '<div class="section-note">Evolución en el tiempo de las lecturas del nodo sensor. '
+            'Úsala para detectar picos de calor o humedad que justifiquen abrir compuertas y activar la ventilación.</div>',
+            unsafe_allow_html=True
+        )
         
         col_a, col_b = st.columns([3, 1])
         with col_a:
@@ -415,10 +456,16 @@ try:
             st.dataframe(df1, use_container_width=True)
 
     # ----------------------------------------------------
-    #  TAB 2 · Estadísticas
+    #  TAB 2 · Estadísticas del Cultivo
     # ----------------------------------------------------
     with tab2:
-        st.markdown("### 📊 Resumen Estadístico Analítico")
+        st.markdown("### 📊 Estadísticas del Microclima del Cultivo")
+        st.markdown(
+            '<div class="section-note">Resumen de las condiciones registradas dentro del invernadero. '
+            'Un promedio estable y una baja variabilidad indican un microclima controlado; picos y valles marcados señalan '
+            'momentos de estrés para las plantas.</div>',
+            unsafe_allow_html=True
+        )
 
         st.markdown("#### Descriptivas Generales")
         st.dataframe(df1[variables].describe().T.round(2), use_container_width=True)
@@ -428,21 +475,26 @@ try:
         serie = df1[var_stats].dropna()
 
         m1, m2, m3, m4 = st.columns(4)
-        m1.metric("Promedio", f"{serie.mean():.2f}")
-        m2.metric("Máximo", f"{serie.max():.2f}")
-        m3.metric("Mínimo", f"{serie.min():.2f}")
-        m4.metric("Desv. Estándar", f"{serie.std():.2f}")
+        m1.metric("Promedio del periodo", f"{serie.mean():.2f}")
+        m2.metric("Pico máximo", f"{serie.max():.2f}")
+        m3.metric("Valle mínimo", f"{serie.min():.2f}")
+        m4.metric("Variabilidad (desv. est.)", f"{serie.std():.2f}")
 
         if len(variables) >= 2:
-            st.markdown("#### Matriz de Correlación")
+            st.markdown("#### Relación entre Variables Climáticas")
             st.dataframe(df1[variables].corr().round(2), use_container_width=True)
-            st.caption("Valores cercanos a 1 o −1 indican una relación lineal fuerte; cercanos a 0, poca relación.")
+            st.caption("Valores cercanos a 1 o −1 indican una relación lineal fuerte (por ejemplo, cómo cambia la humedad al subir la temperatura); cercanos a 0, poca relación.")
 
     # ----------------------------------------------------
     #  TAB 3 · Filtros
     # ----------------------------------------------------
     with tab3:
-        st.markdown("### 🔍 Filtrado Avanzado de Datos")
+        st.markdown("### 🔍 Filtrado de Lecturas del Invernadero")
+        st.markdown(
+            '<div class="section-note">Aísla las lecturas dentro de un rango de valores para revisar episodios concretos '
+            '(por ejemplo, horas con temperatura alta) y descárgalos para tu análisis agronómico.</div>',
+            unsafe_allow_html=True
+        )
 
         var_filtro = st.selectbox("Variable a filtrar", variables, key="var_filtro")
         min_value = float(df1[var_filtro].min())
@@ -473,11 +525,24 @@ try:
             )
 
     # ----------------------------------------------------
-    #  TAB 4 · Confort Térmico (Lectura Directa)
+    #  TAB 4 · Índice de Viabilidad Climática para Cultivos
     # ----------------------------------------------------
     with tab4:
-        st.markdown("### 🌡️ Análisis de Confort Térmico Ambiental")
-        st.markdown("Evaluación automática del nivel de confort basada en las lecturas directas de temperatura y humedad.")
+        st.markdown("### 🌱 Índice de Viabilidad Climática para Cultivos")
+        st.markdown(
+            '<div class="section-note">Clasifica cada lectura según su cercanía al rango óptimo del cultivo y detecta '
+            'estrés térmico o humedad fuera de rango. Un porcentaje alto de lecturas fuera del rango óptimo '
+            'es la señal para reforzar la ventilación y el control de compuertas.</div>',
+            unsafe_allow_html=True
+        )
+        st.markdown(
+            '<div class="range-chips">'
+            '<span>🟢 Rango óptimo: 20–26 °C</span>'
+            '<span>💧 Humedad relativa óptima: 30–60 %</span>'
+            '<span>🔴 Estrés térmico: &gt; 26 °C</span>'
+            '</div>',
+            unsafe_allow_html=True
+        )
 
         df_t_local, _, _ = preparar_datos(df_temp_raw)
         df_h_local, _, _ = preparar_datos(df_hum_raw)
@@ -495,31 +560,36 @@ try:
                 temp = row["Temperatura"]
                 hum = row["Humedad"]
                 if 20 <= temp <= 26 and 30 <= hum <= 60:
-                    return "Confortable 🟢"
+                    return "Óptimo para el cultivo 🟢"
                 elif temp > 26:
-                    return "Caluroso / Seco 🔴" if hum < 40 else "Caluroso / Húmedo 🟠"
+                    return "Estrés térmico / Aire seco 🔴" if hum < 40 else "Estrés térmico / Humedad alta 🟠"
                 else:
-                    return "Frío / Fresco 🔵"
+                    return "Fresco o humedad fuera de rango 🔵"
 
             df_conf_directo["Estado_Confort"] = df_conf_directo.apply(evaluar_confort_dir, axis=1)
             conteo_confort = df_conf_directo["Estado_Confort"].value_counts()
 
             cc1, cc2 = st.columns([1, 2])
             with cc1:
-                st.markdown("**Distribución de Estados:**")
+                st.markdown("**Distribución de la Viabilidad Climática:**")
                 st.dataframe(conteo_confort, use_container_width=True)
 
             with cc2:
-                st.markdown("**Últimos registros evaluados:**")
+                st.markdown("**Últimas lecturas evaluadas:**")
                 st.dataframe(df_conf_directo.tail(5), use_container_width=True)
         else:
-            st.warning("No se pudieron enlazar automáticamente las columnas de temperatura y humedad para el cálculo.")
+            st.warning("No se pudieron enlazar automáticamente las columnas de temperatura y humedad para calcular el índice de viabilidad climática.")
 
     # ----------------------------------------------------
-    #  TAB 5 · Información del sitio
+    #  TAB 5 · Información del invernadero
     # ----------------------------------------------------
     with tab5:
-        st.markdown("### 🗺️ Información del Sitio de Medición y Mapa")
+        st.markdown("### 🏡 Información del Invernadero y Sistema de Control")
+        st.markdown(
+            '<div class="section-note">Ubicación del sitio de medición y descripción del sistema AgroSmart IoT: '
+            'sensores de microclima y actuadores para la ventilación automatizada.</div>',
+            unsafe_allow_html=True
+        )
 
         col_map, col_info = st.columns([1, 1])
 
@@ -533,15 +603,18 @@ try:
             st.map(eafit_location, zoom=15, use_container_width=True)
 
         with col_info:
-            st.markdown("#### Detalles del Nodo Sensor")
+            st.markdown("#### Detalles del Nodo AgroSmart")
             st.markdown("""
+                * **Proyecto:** AgroSmart IoT · Cultivos protegidos  
                 * **Institución:** Universidad EAFIT  
                 * **Ubicación:** Medellín, Antioquia, Colombia  
                 * **Coordenadas:** Lat: 6.2006, Lon: -75.5783  
                 * **Altitud:** ~1,495 m s. n. m.  
-                * **Hardware:** ESP32 + DHT22  
+                * **Sensores:** ESP32 + DHT22 (temperatura y humedad relativa)  
+                * **Ventilación automatizada:** servo para el control de compuertas del invernadero  
+                * **Indicador de estado:** LED asociado al sistema de ventilación  
             """)
-            st.markdown(f"- **Variables medidas:** " + ", ".join(f"`{v}`" for v in variables))
+            st.markdown(f"- **Variables climáticas medidas:** " + ", ".join(f"`{v}`" for v in variables))
             st.markdown(f"- **Total de registros históricos:** `{len(df1)}`")
             if col_tiempo is not None and len(df1) > 0:
                 st.markdown(f"- **Rango temporal:** `{df1.index.min():%Y-%m-%d %H:%M}` a `{df1.index.max():%Y-%m-%d %H:%M}`")
@@ -557,7 +630,7 @@ except Exception as e:
 # ============================================================
 st.markdown("""
     <div class="app-footer">
-        Desarrollado con Streamlit • Sistema IoT de Sensores Urbanos<br>
+        Desarrollado con Streamlit • AgroSmart IoT: Monitoreo y Automatización Climática para Cultivos Protegidos<br>
         <strong>Universidad EAFIT</strong> • Medellín, Colombia
     </div>
 """, unsafe_allow_html=True)
