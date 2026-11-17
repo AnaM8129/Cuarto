@@ -11,69 +11,286 @@ st.set_page_config(
 )
 
 # ============================================================
-#  Estilos CSS Avanzados para cambiar por completo la interfaz
+#  Estilos CSS · Dashboard Ejecutivo
+#  Paleta: azul marino #0F2A4A · azul corporativo #1D4ED8 · azul claro #DBEAFE
+#          grises #F1F5F9 / #E2E8F0 / #64748B · texto #0F172A
 # ============================================================
 st.markdown("""
 <style>
-    /* Fondo general de la aplicación más limpio y moderno */
-    .stApp {
-        background-color: #F4F7F6;
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    :root {
+        --navy: #0F2A4A;
+        --blue: #1D4ED8;
+        --blue-soft: #DBEAFE;
+        --blue-mist: #EFF6FF;
+        --bg: #F1F5F9;
+        --card: #FFFFFF;
+        --line: #E2E8F0;
+        --text: #0F172A;
+        --muted: #64748B;
+        --radius: 16px;
+        --shadow-sm: 0 1px 2px rgba(15, 42, 74, 0.04), 0 4px 12px rgba(15, 42, 74, 0.05);
+        --shadow-md: 0 2px 4px rgba(15, 42, 74, 0.05), 0 12px 28px rgba(15, 42, 74, 0.08);
     }
 
-    /* Encabezado Principal Estilizado */
+    /* ---------- Base ---------- */
+    html, body, .stApp, [class*="css"] {
+        font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+        color: var(--text);
+    }
+    .stApp {
+        background: var(--bg);
+    }
+    #MainMenu, footer { visibility: hidden; }
+    header[data-testid="stHeader"] { background: transparent; }
+
+    div.block-container {
+        max-width: 1280px;
+        padding-top: 1.5rem;
+        padding-bottom: 3rem;
+    }
+
+    /* ---------- Encabezado principal ---------- */
     .main-header {
-        background: linear-gradient(135deg, #1A365D 0%, #2B6CB0 100%);
-        padding: 2.5rem;
-        border-radius: 16px;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(120deg, #0F2A4A 0%, #1E3A8A 55%, #1D4ED8 100%);
+        padding: 2.4rem 2.6rem;
+        border-radius: 20px;
         color: white;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-md);
+    }
+    .main-header::after {
+        content: "";
+        position: absolute;
+        right: -60px; top: -80px;
+        width: 320px; height: 320px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 70%);
     }
     .main-header h1 {
-        color: white !important;
+        color: #FFFFFF !important;
         font-weight: 800;
-        margin-bottom: 0.5rem;
+        font-size: 2rem;
+        letter-spacing: -0.02em;
+        margin: 0 0 0.45rem 0;
+        padding: 0;
     }
     .main-header p {
-        color: #E2E8F0 !important;
-        font-size: 1.1rem;
+        color: #BFD3F5 !important;
+        font-size: 1.02rem;
+        font-weight: 500;
+        margin: 0;
+    }
+    .main-header .badge {
+        display: inline-block;
+        margin-top: 1.1rem;
+        padding: 0.3rem 0.85rem;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.14);
+        border: 1px solid rgba(255,255,255,0.22);
+        color: #FFFFFF;
+        font-size: 0.8rem;
+        font-weight: 600;
     }
 
-    /* Contenedores y tarjetas internas */
-    div.block-container {
-        padding-top: 2rem;
+    /* ---------- Títulos ---------- */
+    h3 {
+        font-weight: 800 !important;
+        letter-spacing: -0.015em;
+        color: var(--navy) !important;
+        padding-bottom: 0.4rem !important;
+    }
+    h4 {
+        font-weight: 700 !important;
+        color: var(--navy) !important;
+        font-size: 1.05rem !important;
+        margin-top: 1.2rem !important;
     }
 
-    /* Estilización avanzada de las pestañas (Tabs) */
+    /* ---------- Pestañas ---------- */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 12px;
-        background-color: #FFFFFF;
-        padding: 12px;
-        border-radius: 14px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-        border: 1px solid #E2E8F0;
+        gap: 6px;
+        background: var(--card);
+        padding: 8px;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow-sm);
+        overflow-x: auto;
     }
     .stTabs [data-baseweb="tab"] {
-        height: 45px;
-        background-color: #EDF2F7;
-        border-radius: 10px;
-        color: #4A5568;
-        font-weight: 700;
+        height: 44px;
         padding: 0 20px;
+        background: transparent;
+        border-radius: 11px;
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 0.93rem;
         border: none;
-        transition: all 0.3s ease;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+    .stTabs [data-baseweb="tab"]:hover {
+        background: var(--blue-mist);
+        color: var(--blue);
     }
     .stTabs [aria-selected="true"] {
-        background-color: #2B6CB0 !important;
-        color: white !important;
-        box-shadow: 0 4px 12px rgba(43, 108, 176, 0.3);
+        background: var(--blue) !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 6px 14px rgba(29, 78, 216, 0.28);
+    }
+    .stTabs [data-baseweb="tab-highlight"],
+    .stTabs [data-baseweb="tab-border"] {
+        display: none;
+    }
+    .stTabs [data-baseweb="tab-panel"] {
+        padding-top: 1.6rem;
     }
 
-    /* Tarjetas de métricas y contenedores de datos */
+    /* ---------- Tarjetas de métricas ---------- */
+    [data-testid="stMetric"] {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 4px solid var(--blue);
+        border-radius: var(--radius);
+        padding: 1.1rem 1.3rem;
+        box-shadow: var(--shadow-sm);
+    }
+    [data-testid="stMetricLabel"] p {
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
     [data-testid="stMetricValue"] {
-        font-size: 1.8rem;
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: var(--navy);
+        letter-spacing: -0.02em;
+    }
+
+    /* ---------- Tablas y gráficos como tarjetas flotantes ---------- */
+    [data-testid="stDataFrame"],
+    [data-testid="stTable"] {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 6px;
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+    }
+    [data-testid="stVegaLiteChart"],
+    [data-testid="stArrowVegaLiteChart"] {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 1.2rem 1rem 0.8rem 1rem;
+        box-shadow: var(--shadow-sm);
+    }
+    [data-testid="stDeckGlJsonChart"],
+    [data-testid="stMap"] {
+        border-radius: var(--radius);
+        overflow: hidden;
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow-sm);
+    }
+
+    /* ---------- Controles de entrada ---------- */
+    [data-testid="stWidgetLabel"] p {
+        font-weight: 600;
+        color: var(--navy);
+        font-size: 0.9rem;
+    }
+    div[data-baseweb="select"] > div {
+        background: var(--card);
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow-sm);
+        min-height: 44px;
+    }
+    div[data-baseweb="select"] > div:focus-within {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
+    }
+    span[data-baseweb="tag"] {
+        background: var(--blue-soft) !important;
+        color: var(--navy) !important;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+    span[data-baseweb="tag"] span[role="presentation"] svg {
+        fill: var(--navy);
+    }
+    [data-testid="stSlider"] [role="slider"] {
+        background: var(--blue);
+        box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.18);
+    }
+    [data-testid="stCheckbox"] label p {
+        font-weight: 500;
+        color: var(--text);
+    }
+
+    /* ---------- Botones ---------- */
+    .stDownloadButton button, .stButton button {
+        background: var(--blue);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 12px;
+        padding: 0.6rem 1.3rem;
         font-weight: 700;
-        color: #2B6CB0;
+        box-shadow: 0 6px 14px rgba(29, 78, 216, 0.25);
+        transition: background 0.2s ease, transform 0.15s ease;
+    }
+    .stDownloadButton button:hover, .stButton button:hover {
+        background: var(--navy);
+        color: #FFFFFF;
+        transform: translateY(-1px);
+    }
+    .stDownloadButton button:focus-visible, .stButton button:focus-visible {
+        outline: 3px solid rgba(29, 78, 216, 0.35);
+        outline-offset: 2px;
+    }
+
+    /* ---------- Alertas ---------- */
+    [data-testid="stAlert"] {
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow-sm);
+    }
+
+    /* ---------- Captions y listas ---------- */
+    [data-testid="stCaptionContainer"] {
+        color: var(--muted);
+    }
+    [data-testid="stMarkdownContainer"] ul {
+        line-height: 1.9;
+    }
+    code {
+        background: var(--blue-mist);
+        color: var(--blue);
+        border-radius: 6px;
+        padding: 0.1rem 0.4rem;
+        font-weight: 600;
+    }
+
+    /* ---------- Pie de página ---------- */
+    .app-footer {
+        text-align: center;
+        padding: 1.6rem 0 0.5rem 0;
+        color: var(--muted);
+        font-size: 0.88rem;
+        font-weight: 500;
+        border-top: 1px solid var(--line);
+        margin-top: 3rem;
+        line-height: 1.7;
+    }
+    .app-footer strong { color: var(--navy); }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 768px) {
+        .main-header { padding: 1.6rem 1.3rem; }
+        .main-header h1 { font-size: 1.45rem; }
+        .stTabs [data-baseweb="tab"] { padding: 0 14px; font-size: 0.85rem; }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -121,6 +338,7 @@ st.markdown("""
     <div class="main-header">
         <h1>📊 Panel de Control IoT - Sensores Urbanos</h1>
         <p>Sistema avanzado de monitoreo ambiental en tiempo real • Universidad EAFIT</p>
+        <span class="badge">Medellín, Colombia · ESP32 + DHT22</span>
     </div>
 """, unsafe_allow_html=True)
 
@@ -338,8 +556,8 @@ except Exception as e:
 #  Pie de página profesional
 # ============================================================
 st.markdown("""
-    <div style="text-align: center; padding: 2rem 0; color: #718096; font-size: 0.9rem; border-top: 1px solid #E2E8F0; margin-top: 3rem;">
+    <div class="app-footer">
         Desarrollado con Streamlit • Sistema IoT de Sensores Urbanos<br>
-        Universidad EAFIT • Medellín, Colombia
+        <strong>Universidad EAFIT</strong> • Medellín, Colombia
     </div>
 """, unsafe_allow_html=True)
